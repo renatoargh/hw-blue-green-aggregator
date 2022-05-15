@@ -14,3 +14,5 @@ If you are unable to install awslogs you can go directly to CloudWatch and find 
 
 Extra:
 Open an additional terminal, and run a secondary producer with `npm start`. Notice that cutoff dates will always be in sync between the two tabs.
+
+![blue-green-aggregator-example.jpeg](https://github.com/renatoargh/hw-blue-green-aggregator/blob/main/blue-green-aggregator-example.jpeg?raw=true)
