@@ -73,7 +73,7 @@ async function addAlert(userId: string, alert: Alert, retryNumber: number = 0): 
     Key: marshall({ userId }),
     TableName: TABLE_NAME,
     UpdateExpression: "SET #blue.#alertId = :alert",
-    ConditionExpression: "attribute_exists(userId) AND attribute_not_exists(#blue.#alertId) AND #stage = :blue AND #cutOff > :now",
+    ConditionExpression: "attribute_exists(userId) AND attribute_not_exists(#blue.#alertId) AND #stage = :blue AND #cutOff >= :now",
     ExpressionAttributeNames: {
       "#cutOff": "cutOff",
       "#blue": AggregationStage.BLUE,
@@ -92,7 +92,7 @@ async function addAlert(userId: string, alert: Alert, retryNumber: number = 0): 
     Key: marshall({ userId }),
     TableName: TABLE_NAME,
     UpdateExpression: "SET #green.#alertId = :alert",
-    ConditionExpression: "attribute_exists(userId) AND attribute_not_exists(#green.#alertId) AND #stage = :green AND #cutOff > :now",
+    ConditionExpression: "attribute_exists(userId) AND attribute_not_exists(#green.#alertId) AND #stage = :green AND #cutOff >= :now",
     ExpressionAttributeNames: {
       "#cutOff": "cutOff",
       "#green": AggregationStage.GREEN,
