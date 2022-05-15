@@ -15,6 +15,7 @@ const client = new DynamoDBClient({
 ///// CONFIGURATION v
 const AGGREGATION_INTERVAL_SECONDS = 3;
 const TABLE_NAME = 'hw-blue-green-aggregation';
+const MAX_RETRIES = 3;
 ///// CONFIGURATION ^
 
 type Alert = {
@@ -54,7 +55,7 @@ function getNewAggregation(userId: string, alert: Alert): Aggregation {
   }
 }
 
-async function addAlert(userId: string, alert: Alert): Promise<void> {
+async function addAlert(userId: string, alert: Alert, retryNumber: number = 0): Promise<void> {
   const now = DateTime.now();
   const nowISO = now.toISO();
   const nextCutOffIso = now.plus({
@@ -174,6 +175,11 @@ async function addAlert(userId: string, alert: Alert): Promise<void> {
 
     console.log(`[${nowFormatted} -> ${cutOffFormatted}]: ${alert.city}`);
   } catch (err) {
+    // All promises failed, this is unexpected. Let's retry
+    if (retryNumber < MAX_RETRIES - 1) {
+      return addAlert(userId, alert, retryNumber + 1);
+    }
+
     console.log("\nAll requests failed:");
     (err as AggregateError).errors
       .forEach((e, index) => console.log(`> ${index + 1}. ${e.message}`));
