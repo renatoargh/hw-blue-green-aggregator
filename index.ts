@@ -163,7 +163,6 @@ async function addAlert(userId: string, alert: Alert, retryNumber: number = 0): 
   
     let updatedAggregation: Aggregation | null = null
 
-    // @ts-ignore
     if (results.Attributes !== undefined) {
       updatedAggregation = unmarshall(results.Attributes) as Aggregation;
     } else {
@@ -173,14 +172,14 @@ async function addAlert(userId: string, alert: Alert, retryNumber: number = 0): 
     const cutOffFormatted = DateTime.fromISO(updatedAggregation.cutOff).toFormat("HH:mm:ss.SSS");
     const nowFormatted = now.toFormat("HH:mm:ss.SSS");
 
-    console.log(`[${nowFormatted} -> ${cutOffFormatted}]: ${alert.city}`);
+    console.log(`[${nowFormatted} -> ${cutOffFormatted}]: ${alert.city} (attempt: ${retryNumber + 1})`);
   } catch (err) {
     // All promises failed, this is unexpected. Let's retry
     if (retryNumber < MAX_RETRIES - 1) {
       return addAlert(userId, alert, retryNumber + 1);
     }
 
-    console.log("\nAll requests failed:");
+    console.log(`\nAll requests failed @ attempt ${retryNumber}:`);
     (err as AggregateError).errors
       .forEach((e, index) => console.log(`> ${index + 1}. ${e.message}`));
 
